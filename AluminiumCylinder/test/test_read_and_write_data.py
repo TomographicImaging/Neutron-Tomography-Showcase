@@ -15,15 +15,13 @@
 #   Authored by:    Laura Murgatroyd (UKRI-STFC)
 
 
-import sys
-sys.path.append('../io')
-sys.path.append('../')
+from data_io.file_paths import *
 from cil.processors import Slicer
-from file_paths import *
+
 from cil.io import TIFFStackReader
 
-from read_and_write import read_and_write_data, read_raw_data, read_flat_data, read_dark_data, read_angles
-from utils import _read_summed_data
+from data_io.read_and_write import read_and_write_data, read_raw_data, read_flat_data, read_dark_data, read_angles
+from data_io.utils import _read_summed_data
 import unittest
 import os
 import csv

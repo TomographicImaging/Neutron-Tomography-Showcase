@@ -19,12 +19,12 @@ from cil.io import TIFFStackReader, TIFFWriter
 from cil.framework import AcquisitionData, AcquisitionGeometry
 import numpy as np
 import os
-import sys
-sys.path.append('../')
-from file_paths import *
+#import sys
+#sys.path.append('../')
+from data_io.file_paths import *
 import warnings
 
-from utils import _read_summed_data
+from data_io.utils import _read_summed_data
 
 
 def read_raw_data(exposure_time, roi=None, variant='a'):
@@ -280,10 +280,4 @@ def read_and_write_data(exposure_time, file_path, roi=None, variant='a'):
             f.write(f"{angle}\n")
     
 
-if __name__ == "__main__":
-    # Example usage
-    data_label = '3.75s_a'
-    file_path = './data_output'
-    
-    read_and_write_data(data_label, file_path)
     
