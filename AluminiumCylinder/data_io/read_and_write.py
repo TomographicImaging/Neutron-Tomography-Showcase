@@ -19,8 +19,6 @@ from cil.io import TIFFStackReader, TIFFWriter
 from cil.framework import AcquisitionData, AcquisitionGeometry
 import numpy as np
 import os
-#import sys
-#sys.path.append('../')
 from data_io.file_paths import *
 import warnings
 
