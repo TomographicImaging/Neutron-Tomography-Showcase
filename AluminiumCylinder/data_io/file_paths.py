@@ -17,6 +17,7 @@
 import os
 
 base_path = '/mnt/share/IMAT_share/Cylinder_Aluminium/CILZrO2_steel_trisospheres_test/Cropped'
+processed_data_path = '/home/lhe97136/IMAT Preprocessed To Release/Preprocessed'
 
 exp_3_75s_a_path = os.path.join(base_path, 'exp_3_75s_a')
 

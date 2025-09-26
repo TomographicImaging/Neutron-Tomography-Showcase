@@ -277,5 +277,77 @@ def read_and_write_data(exposure_time, file_path, roi=None, variant='a'):
         for angle in angles:
             f.write(f"{angle}\n")
     
+def read_processed_data(exposure_time, num_angles):
+    """
+    Reads processed data from TIFF files and a comma-separated angles file.
+
+    Parameters
+    ----------
+    - exposure_time (float, int): The exposure time in seconds
+    - num_angles (int): The number of angles
+
+    Returns
+    -------
+    - data (cil AcquisitionData): The processed projection data read from the TIFF files.
+    """
+
+    # convert exposure_time to string with '.' replaced with '_'
+    exposure_time_str = str(exposure_time).replace('.', '_')
+    # To update later:
+    file_path = os.path.join(processed_data_path, f'exp_{exposure_time_str}_angles_{num_angles}')
+
+    # Define paths for each type of data
+    angles_file = os.path.join(file_path, f'angles_{exposure_time_str}.csv')
+
+    mi_file = os.path.join(file_path, 'image.json')
+
+
+
+
+
+    # Read angles from the CSV file
+    angles = []
+    with open(angles_file, "r") as csvfile:
+        for line in csvfile:
+            angles.append(float(line.strip()))
+    if len(angles) != num_angles:
+        raise ValueError(f"Number of angles in file ({len(angles)}) does not match expected number ({num_angles})")
+    
+    # Read projection data using TIFFStackReader
+    proj_reader = TIFFStackReader(file_name=file_path)
+    data = proj_reader.read()
+
+    import json
+
+    # Read the JSON file
+    with open(mi_file, "r") as jsonfile:
+        d= json.load(jsonfile)
+        # Extract last cor_tilt_finding
+        final_cor_tilt = None
+        for op in reversed(d["operation_history"]):
+            if op["name"] == "cor_tilt_finding":
+                final_cor_tilt = op["kwargs"]
+                break
+
+    rotation_centre = final_cor_tilt['rotation_centre']
+    tilt_angle_deg = final_cor_tilt['tilt_angle_deg']
+    
 
     
+    offset = -rotation_centre + data.shape[2] / 2
+    pixel_size=48*10**-4
+    offset = offset + np.tan(tilt_angle_deg * np.pi / 180) * (data.shape[1] / 2)
+    # print(f"Offset: {offset*pixel_size}, Tilt angle (deg): {tilt_angle_deg}")
+    # print(f"Expected: offset={-8.235721150709189*pixel_size}, angle=-0.002745552568811436)")
+
+    pixel_size=48*10**-4
+
+    acquisition_geometry = AcquisitionGeometry.create_Parallel3D().set_panel(num_pixels=[ data.shape[2], data.shape[1]], pixel_size = [pixel_size, pixel_size]).set_angles(angles=angles)
+    ac_data = AcquisitionData(data, geometry=acquisition_geometry)
+
+    ac_data.geometry.set_centre_of_rotation(-offset*pixel_size, angle=-tilt_angle_deg, angle_units='degree')
+
+    from cil.processors import TransmissionAbsorptionConverter
+    ac_data = TransmissionAbsorptionConverter()(ac_data)
+    # TODO centre of rotation
+    return ac_data
