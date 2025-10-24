@@ -302,9 +302,6 @@ def read_processed_data(exposure_time, num_angles):
     mi_file = os.path.join(file_path, 'image.json')
 
 
-
-
-
     # Read angles from the CSV file
     angles = []
     with open(angles_file, "r") as csvfile:
@@ -349,5 +346,4 @@ def read_processed_data(exposure_time, num_angles):
 
     from cil.processors import TransmissionAbsorptionConverter
     ac_data = TransmissionAbsorptionConverter()(ac_data)
-    # TODO centre of rotation
     return ac_data
