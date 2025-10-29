@@ -228,6 +228,7 @@ def read_and_write_data(exposure_time, file_path, roi=None, variant='a'):
         options include: 3.75, 7.5, 11.25, 15, 18.75, 22.5, 26.25, 30, 33.75, 37.5, 41.25, 45, 48.75, 52.5, 56.25, 60.0
     - file_path (str): The path where the TIFF files and angles file will be written.
     - roi (dict): Region of interest for the data. Default is None. Not applied to flats and darks
+      e.g. {'angle': (start, end, step)}
     - variant (str): {'a', 'b'}
         Only applicable for 3.75 exposure time, which has two datasets: a and b.
     Returns
@@ -271,7 +272,7 @@ def read_and_write_data(exposure_time, file_path, roi=None, variant='a'):
     save_stack(dark_after, dark_after_path, 'dark_after')
 
     # write out the angles comma separated
-    angles_file = os.path.join(file_path, f'angles_{exposure_time}.csv')
+    angles_file = os.path.join(file_path, f'angles.csv')
 
     with open(angles_file, 'w') as f:
         for angle in angles:
@@ -297,7 +298,7 @@ def read_processed_data(exposure_time, num_angles):
     file_path = os.path.join(processed_data_path, f'exp_{exposure_time_str}_angles_{num_angles}')
 
     # Define paths for each type of data
-    angles_file = os.path.join(file_path, f'angles_{exposure_time_str}.csv')
+    angles_file = os.path.join(file_path, f'angles.csv')
 
     mi_file = os.path.join(file_path, 'image.json')
 

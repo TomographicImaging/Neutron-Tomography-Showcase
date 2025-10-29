@@ -16,41 +16,43 @@
 
 import os
 
-base_path = '/mnt/share/IMAT_share/Cylinder_Aluminium/CILZrO2_steel_trisospheres_test/Cropped'
 processed_data_path = '/home/lhe97136/IMAT Preprocessed To Release/Preprocessed'
 
-exp_3_75s_a_path = os.path.join(base_path, 'exp_3_75s_a')
+raw_data_base_path = '/mnt/share/IMAT_share/Cylinder_Aluminium/CILZrO2_steel_trisospheres_test/Cropped'
 
-exp_3_75s_b_path = os.path.join(base_path, 'exp_3_75s_b')
 
-exp_3_75s_dark_B_path = os.path.join(base_path, 'Dark_Before_3_75s')
-exp_3_75s_dark_A_path = os.path.join(base_path, 'Dark_After_3_75s')
+exp_3_75s_a_path = os.path.join(raw_data_base_path, 'exp_3_75s_a')
 
-exp_3_75s_flat_B_path = os.path.join(base_path, 'Flat_Before_3_75s')
-exp_3_75s_flat_A_path = os.path.join(base_path, 'Flat_after2_3_75s')
+exp_3_75s_b_path = os.path.join(raw_data_base_path, 'exp_3_75s_b')
 
-exp_7_5s_path = os.path.join(base_path, 'exp_7_5s')
+exp_3_75s_dark_B_path = os.path.join(raw_data_base_path, 'Dark_Before_3_75s')
+exp_3_75s_dark_A_path = os.path.join(raw_data_base_path, 'Dark_After_3_75s')
 
-exp_7_5s_dark_B_path = os.path.join(base_path, 'Dark_Before_7_5s')
-exp_7_5s_dark_A_path = os.path.join(base_path, 'Dark_After_7_5s')
-exp_7_5s_flat_B_path = os.path.join(base_path, 'Flat_Before_7_5s')
-exp_7_5s_flat_A_path = os.path.join(base_path, 'Flat_after2_7_5s')
+exp_3_75s_flat_B_path = os.path.join(raw_data_base_path, 'Flat_Before_3_75s')
+exp_3_75s_flat_A_path = os.path.join(raw_data_base_path, 'Flat_after2_3_75s')
 
-exp_15s_path = os.path.join(base_path, 'exp_15s')
-exp_15s_dark_B_path = os.path.join(base_path, 'Dark_Before_15s')
-exp_15s_dark_A_path = os.path.join(base_path, 'Dark_After_15s')
-exp_15s_flat_B_path = os.path.join(base_path, 'Flat_Before_15s')
-exp_15s_flat_A_path = os.path.join(base_path,  'Flat_after2_15s')
+exp_7_5s_path = os.path.join(raw_data_base_path, 'exp_7_5s')
 
-exp_30s_path = os.path.join(base_path, 'exp_30s')
-exp_30s_dark_B_path = os.path.join(base_path, 'Dark_Before_30s')
-exp_30s_dark_A_path = os.path.join(base_path, 'Dark_After_30s')
-exp_30s_flat_B_path = os.path.join(base_path, 'Flat_Before_30s')
-exp_30s_flat_A_path = os.path.join(base_path,  'Flat_after2_30s')
+exp_7_5s_dark_B_path = os.path.join(raw_data_base_path, 'Dark_Before_7_5s')
+exp_7_5s_dark_A_path = os.path.join(raw_data_base_path, 'Dark_After_7_5s')
+exp_7_5s_flat_B_path = os.path.join(raw_data_base_path, 'Flat_Before_7_5s')
+exp_7_5s_flat_A_path = os.path.join(raw_data_base_path, 'Flat_after2_7_5s')
 
-exp_3_75s_a_log_combined = os.path.join(base_path, 'IMAT00031028_CILZrO2_steel_trisospheres_testexp_3_75s_a_log_combined.csv')
-exp_3_75s_b_log_combined = os.path.join(base_path, 'IMAT00031028_CILZrO2_steel_trisospheres_testexp_3_75s_b_log_combined.csv')
-exp_7_5s_log_combined = os.path.join(base_path, 'IMAT00031028_CILZrO2_steel_trisospheres_testexp_7_5s_log_combined.csv')
-exp_15s_log_combined = os.path.join(base_path, 'IMAT00031028_CILZrO2_steel_trisospheres_testexp_15s_log_combined.csv')
-exp_30s_log_combined = os.path.join(base_path, 'IMAT00031028_CILZrO2_steel_trisospheres_testexp_30s_log_combined.csv')
+exp_15s_path = os.path.join(raw_data_base_path, 'exp_15s')
+exp_15s_dark_B_path = os.path.join(raw_data_base_path, 'Dark_Before_15s')
+exp_15s_dark_A_path = os.path.join(raw_data_base_path, 'Dark_After_15s')
+exp_15s_flat_B_path = os.path.join(raw_data_base_path, 'Flat_Before_15s')
+exp_15s_flat_A_path = os.path.join(raw_data_base_path,  'Flat_after2_15s')
+
+exp_30s_path = os.path.join(raw_data_base_path, 'exp_30s')
+exp_30s_dark_B_path = os.path.join(raw_data_base_path, 'Dark_Before_30s')
+exp_30s_dark_A_path = os.path.join(raw_data_base_path, 'Dark_After_30s')
+exp_30s_flat_B_path = os.path.join(raw_data_base_path, 'Flat_Before_30s')
+exp_30s_flat_A_path = os.path.join(raw_data_base_path,  'Flat_after2_30s')
+
+exp_3_75s_a_log_combined = os.path.join(raw_data_base_path, 'IMAT00031028_CILZrO2_steel_trisospheres_testexp_3_75s_a_log_combined.csv')
+exp_3_75s_b_log_combined = os.path.join(raw_data_base_path, 'IMAT00031028_CILZrO2_steel_trisospheres_testexp_3_75s_b_log_combined.csv')
+exp_7_5s_log_combined = os.path.join(raw_data_base_path, 'IMAT00031028_CILZrO2_steel_trisospheres_testexp_7_5s_log_combined.csv')
+exp_15s_log_combined = os.path.join(raw_data_base_path, 'IMAT00031028_CILZrO2_steel_trisospheres_testexp_15s_log_combined.csv')
+exp_30s_log_combined = os.path.join(raw_data_base_path, 'IMAT00031028_CILZrO2_steel_trisospheres_testexp_30s_log_combined.csv')
 
