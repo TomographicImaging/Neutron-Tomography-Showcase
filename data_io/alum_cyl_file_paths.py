@@ -18,9 +18,9 @@ import os
 
 # Please update these paths to local paths where you have stored the data: -----------------------------
 
-processed_data_path = '/home/lhe97136/IMAT Preprocessed To Release/Preprocessed'
+processed_data_path = ''
 
-raw_data_base_path = '/mnt/share/IMAT_share/Cylinder_Aluminium/CILZrO2_steel_trisospheres_test/Cropped'
+raw_data_base_path = ''
 
 
 # Please leave unchanged - these are the paths used in the demo notebooks: -----------------------------
