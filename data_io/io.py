@@ -19,12 +19,13 @@ from cil.io import TIFFStackReader
 import numpy as np
 from cil.framework import AcquisitionData, AcquisitionGeometry
 import os
+import glob
 
 
 def read_mantid_imaging_data(file_path, pixel_size, angles_file=None):
     """
     Reads processed data from TIFF files and a comma-separated angles file.
-    If the angles file is not present, angles are assumed to be between 0 and 360 and equally spaced
+    If the angles file is not present, or not found in same directory as tiff files, angles are assumed to be between 0 and 360 and equally spaced
     Reads the centre of rotation and tilt angle from Mantid Imaging JSON file.
     Parameters
     ----------
@@ -52,11 +53,8 @@ def read_mantid_imaging_data(file_path, pixel_size, angles_file=None):
 
 
     if angles_file is None:
-        angles_file = os.path.join(file_path, f'angles.csv')
+        angles_file = glob.glob(os.path.join(file_path, '*.csv'))[0]
 
-      
-
-    
     # Read projection data using TIFFStackReader
     proj_reader = TIFFStackReader(file_name=file_path)
     data = proj_reader.read()
