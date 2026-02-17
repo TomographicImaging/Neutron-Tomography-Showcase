@@ -7,26 +7,58 @@ def get_weights_for_FBP(data):
     # Get the angles from the golden ratio dataset
     angles = data.geometry.angles.copy()
 
-    angle_max = np.max(angles)
-    angle_min = np.min(angles)
-    angle_range = angle_max - angle_min
-
+    angle_range = np.max(angles) - np.min(angles)
 
     # Create array of angle indices in order of angle values
     sorted_indices = np.argsort(angles)
     ordered_angles = angles[sorted_indices]
 
     num_angles = len(ordered_angles)
-    weights = []
+    weights = np.zeros(num_angles)
+    
+
+    # create tolerance for two angles being equal:
+    gaps=[]
+    for i in range(num_angles):
+        prev_idx = (i - 1) % num_angles
+        gaps.append((ordered_angles[i]-ordered_angles[prev_idx]) % num_angles)
+    mean_gap = np.mean(np.asarray(gaps))
+
+    angular_tolerance = 0.1*mean_gap
+
+    num_proj_at_same_angle = 0
 
     for i in range(num_angles):
+
+        # skips if current angle same as prev angle
+        # as has already been assigned a weight:
+        if num_proj_at_same_angle >0:
+            num_proj_at_same_angle -= 1
+            continue
+
         prev_idx = (i - 1) % num_angles
         next_idx = (i + 1) % num_angles
 
         prev_angle = ordered_angles[prev_idx]
         next_angle = ordered_angles[next_idx]
-        
-        weights.append((next_angle-prev_angle) % angle_range / 2.0)
+        current_angle = ordered_angles[i]
+
+        # if weight is zero, need to change approach:
+        # if we have two angles that are the same:
+        # then they need to be the weight of the following angle - the previous angle, divided by 2.0
+        # but need to see how many angles are the same, and then divide by that number as well
+
+        if np.isclose(next_angle, current_angle, atol=angular_tolerance):
+            num_proj_at_same_angle = 1
+            while np.isclose(next_angle, current_angle, atol=angular_tolerance):
+                next_idx = (next_idx + 1) % num_angles
+                next_angle = ordered_angles[next_idx]
+                num_proj_at_same_angle += 1
+            for j in range(num_proj_at_same_angle):
+                weights[i+j] = (next_angle-prev_angle) % angle_range / (2.0*num_proj_at_same_angle)
+
+        else:
+            weights[i] = (next_angle-prev_angle) % angle_range / 2.0
 
     # Reorder weights back to original projection order
     original_order_weights = np.zeros(num_angles)
@@ -44,45 +76,50 @@ def get_weights_for_FBP(data):
 
     return original_order_weights
 
-def run_weighted_fbp(data, weights):
-    # Apply weights to the data
-    data_weighted = data.copy()
-    for angle_idx in range(data.geometry.angles.size):
-        try:
-            data_weighted.array[angle_idx, :, :] *= weights[angle_idx]
-        except:
-            data_weighted.array[angle_idx, :] *= weights[angle_idx]
+# def run_weighted_fbp(data, weights):
+#     # Apply weights to the data
+#     data_weighted = data.copy()
+#     for angle_idx in range(data.geometry.angles.size):
+#         try:
+#             data_weighted.array[angle_idx, :, :] *= weights[angle_idx]
+#         except:
+#             data_weighted.array[angle_idx, :] *= weights[angle_idx]
 
-    # Reorder and reconstruct with weighted data
-    data_weighted.reorder('astra')
-    recon = FBP_ASTRA(data_weighted.geometry.get_ImageGeometry(), data_weighted.geometry)(data_weighted)
-    return recon
+#     # Reorder and reconstruct with weighted data
+#     data_weighted.reorder('astra')
+#     recon = FBP_ASTRA(data_weighted.geometry.get_ImageGeometry(), data_weighted.geometry)(data_weighted)
+#     return recon
 
 
-def run_weighted_fbp_no_numba(data, weights):
+def run_weighted_fbp(data, weights, accelerated=True):
     if 'vertical' in data.dimension_labels:
         v_size = data.get_dimension_size('vertical')
+    else:
+        v_size = 1
 
     if 'horizontal' in data.dimension_labels:
         h_size = data.get_dimension_size('horizontal')
+    else:
+        h_size = 1
 
-    data_weighted = data.copy()
-    #data_weighted_flat = data_weighted.ravel()
     proj_size = v_size*h_size
     num_proj = int(data.array.size / proj_size)
 
+    data_weighted = data.copy() # Doesn't alter the original AcquisitionData
 
-    out_reshaped = data_weighted.array.reshape(num_proj, proj_size)
-    weight = np.asarray(weight)
-    weight =  weights[:, np.newaxis]  # shape: (num_proj, 1) 
-    np.multiply(out_reshaped, weight, out=out_reshaped)
+    data_array = data_weighted.array.reshape(num_proj, proj_size)
+    weights = np.asarray(weights)[:, np.newaxis] # shape: (num_proj, 1) 
 
-    return out_reshaped
+    if accelerated:
+        numba_loop(weights, num_proj, proj_size, data_array)
+    
+    else:
+        np.multiply(data_array, weights, out=data_array)
 
-    # for i in num_proj:
-    #     data_weighted_flat[i*proj_size+]
-
-
+    data_weighted.array = data_array
+    data_weighted.reorder('astra')
+    recon = FBP_ASTRA(data_weighted.geometry.get_ImageGeometry(), data_weighted.geometry)(data_weighted)
+    return recon
 
 
 @numba.njit(parallel=True)
@@ -90,7 +127,7 @@ def numba_loop(weights, num_proj, proj_size, out):
     out_flat = out.ravel()
     for i in numba.prange(num_proj):
         for ij in range(proj_size):
-            out_flat[i*proj_size+ij] *= (weights[i])
+            out_flat[i*proj_size+ij] *= weights[i]
 
 
 
