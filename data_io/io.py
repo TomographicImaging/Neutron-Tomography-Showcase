@@ -19,11 +19,13 @@ from cil.io import TIFFStackReader
 import numpy as np
 from cil.framework import AcquisitionData, AcquisitionGeometry
 import os
+import glob
 
 
-def read_mantid_imaging_data(file_path, pixel_size):
+def read_mantid_imaging_data(file_path, pixel_size, angles_file=None):
     """
     Reads processed data from TIFF files and a comma-separated angles file.
+    If the angles file is not present, or not found in same directory as tiff files, angles are assumed to be between 0 and 360 and equally spaced
     Reads the centre of rotation and tilt angle from Mantid Imaging JSON file.
     Parameters
     ----------
@@ -50,19 +52,22 @@ def read_mantid_imaging_data(file_path, pixel_size):
     mi_file = os.path.join(file_path, 'image.json')
 
 
-    angles_file = os.path.join(file_path, f'angles.csv')
+    if angles_file is None:
+        angles_file = glob.glob(os.path.join(file_path, '*.csv'))[0]
 
-    
-
-    # Read angles from the CSV file
-    angles = []
-    with open(angles_file, "r") as csvfile:
-        for line in csvfile:
-            angles.append(float(line.strip()))
-    
     # Read projection data using TIFFStackReader
     proj_reader = TIFFStackReader(file_name=file_path)
     data = proj_reader.read()
+
+    if not os.path.exists(angles_file):
+        angles = np.linspace(0,360, data.shape[0])
+    else:
+        # Read angles from the CSV file
+        angles = read_angles_from_mi_log_file(angles_file)
+        if angles == []:
+            with open(angles_file, "r") as csvfile:
+                for line in csvfile:
+                    angles.append(float(line.strip()))
 
     import json
 
