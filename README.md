@@ -24,3 +24,9 @@ This is available on zenodo at: https://zenodo.org/records/17250237
 Specifically, these notebooks work with the pre-processed data, for which the direct download link is: https://zenodo.org/records/17250237/files/preprocessed_data.zip?download=1
 
 For more information on loading the Aluminium Cylinder dataset see: [data_io/README.md](data_io/README.md)
+
+### Golden Angle
+This case study demonstrates golden angle acquisition.
+This, and some other notebooks make use of the dataset: "Lego Man Neutron Tomography Dataset with Equidistant and Golden Angle Acquistions"
+This is available on zenodo at: https://zenodo.org/records/17814677
+Specifically, these notebooks work with the pre-processed data, for which the direct download link is: https://zenodo.org/records/17814677/files/preprocessed_data.zip
