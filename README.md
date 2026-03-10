@@ -31,5 +31,5 @@ This, and some other notebooks make use of the dataset: "Lego Man Neutron Tomogr
 This is available on zenodo at: https://zenodo.org/records/17814677
 Specifically, these notebooks work with the pre-processed data, for which the direct download link is: https://zenodo.org/records/17814677/files/preprocessed_data.zip
 
-## Artefacts
+### Artefacts
 Not a single case study as such, but a collection of notebooks showing the cause of different types of artefacts and whether we can do anything about them.
