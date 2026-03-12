@@ -37,7 +37,6 @@ def setup_explicit_TV(A, value, data, omega=1, alpha=None):
     grad = GradientOperator(K11.domain)
     if alpha is None:
         alpha = value * A.norm()/grad.norm()
-    print("alpha = ", alpha)
     K21 = alpha * grad
     
     K = BlockOperator(K11, K21)
