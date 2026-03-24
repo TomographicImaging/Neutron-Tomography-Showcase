@@ -1,7 +1,22 @@
 from cil.optimisation.functions import L2NormSquared
 import numpy as np
-def calculate_L2Norm_error(ground_truth, rec):
+from cil.optimisation.functions import L2NormSquared
+def calculate_L2Norm_error(ground_truth, rec, apply_mask=True):
     """Compute normalized L2 error between ground truth and reconstruction."""
+    # need a circle mask of the same size as the images to compute the error only within the region of interest
+    if apply_mask:
+        mask = np.zeros_like(ground_truth.as_array(), dtype=bool)
+        center = (mask.shape[0] // 2, mask.shape[1] // 2)
+        radius = min(center)
+        Y, X = np.ogrid[:mask.shape[0], :mask.shape[1]]
+        dist_from_center = np.sqrt((X - center[1])**2 + (Y - center[0])**2)
+        mask[dist_from_center <= radius] = True
+        rec_masked = rec.as_array()*mask
+        gt_masked = ground_truth.as_array()*mask
+        ground_truth = ground_truth.copy()
+        ground_truth.array = gt_masked
+        rec = rec.copy()
+        rec.array = rec_masked
     return np.sqrt(L2NormSquared(b=ground_truth)(rec) / L2NormSquared()(ground_truth))
 
 def calculate_snr(data, mask=None):
