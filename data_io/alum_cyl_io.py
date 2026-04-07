@@ -280,7 +280,8 @@ def read_processed_data(exposure_time, num_angles):
     -------
     - data (cil AcquisitionData): The processed projection data read from the TIFF files.
     """
-
+    if processed_data_path == '':
+        raise ValueError("Please update the 'processed_data_path' variable in 'alum_cyl_file_paths.py' to the local path where you have stored the processed data.")
     # convert exposure_time to string with '.' replaced with '_'
     exposure_time_str = str(exposure_time).replace('.', '_')
     # To update later:
