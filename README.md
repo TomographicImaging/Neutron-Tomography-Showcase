@@ -20,7 +20,7 @@ This case study investigates the importance of number of projections (or angles)
 The case study will showcase how the iterative methods available in Mantid Imaging can be used to improve the quality of reconstructed data.
 
 The dataset used in this study is the Aluminium Cylinder Flexible Neutron Tomography Dataset.
-This is available on zenodo at: This is available on zenodo at: https://zenodo.org/records/19387166
+This is available on zenodo at: https://zenodo.org/records/19387166
 Specifically, these notebooks work with the pre-processed data, for which the direct download link is: https://zenodo.org/records/19387166/files/preprocessed_data.zip
 
 For more information on loading the Aluminium Cylinder dataset see: [data_io/README.md](data_io/README.md)
