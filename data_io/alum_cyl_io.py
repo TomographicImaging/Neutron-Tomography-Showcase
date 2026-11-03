@@ -267,7 +267,7 @@ def read_and_write_data(exposure_time, file_path, roi=None, variant='a'):
         for angle in angles:
             f.write(f"{angle}\n")
     
-def read_processed_data(exposure_time, num_angles):
+def read_processed_data(exposure_time, num_angles, vertical=None):
     """
     Reads processed data from TIFF files and a comma-separated angles file.
 
@@ -289,4 +289,4 @@ def read_processed_data(exposure_time, num_angles):
 
     pixel_size=48*10**-4
 
-    return read_mantid_imaging_data(file_path, pixel_size)
+    return read_mantid_imaging_data(file_path, pixel_size, vertical=vertical)
