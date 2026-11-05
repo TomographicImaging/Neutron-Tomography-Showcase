@@ -15,6 +15,10 @@ Check the [main CIL repo](https://github.com/TomographicImaging/CIL) for full de
 ## Case Studies
 Information on the case studies and the datasets used  are as follows:
 
+### Training
+The notebooks with 'Training' in their name are notebooks dedicated to introducing iterative methods in detail.
+These work with the Aluminium Cylinder dataset (see details below)
+
 ### Angles_vs_Exposure
 This case study investigates the importance of number of projections (or angles), vs exposure time of the projections when total experiment time is limited.
 The case study will showcase how the iterative methods available in Mantid Imaging can be used to improve the quality of reconstructed data.
