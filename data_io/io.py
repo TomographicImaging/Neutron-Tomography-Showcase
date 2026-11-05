@@ -121,7 +121,7 @@ def read_mantid_imaging_data(file_path, pixel_size, angles_file=None, convert_to
 
     if convert_to_absorption:
         from cil.processors import TransmissionAbsorptionConverter
-        ac_data = TransmissionAbsorptionConverter()(ac_data)
+        ac_data = TransmissionAbsorptionConverter(min_intensity=1e-8)(ac_data)
     return ac_data
 
 def read_angles_from_mi_log_file(file_path, roi=None):
