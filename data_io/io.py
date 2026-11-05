@@ -21,7 +21,7 @@ from cil.framework import AcquisitionData, AcquisitionGeometry
 import os
 import glob
 
-def read_mantid_imaging_data(file_path, pixel_size, angles_file=None, convert_to_absorption=True):
+def read_mantid_imaging_data(file_path, pixel_size, angles_file=None, convert_to_absorption=True, vertical=None):
     """
     Reads processed data from TIFF files and a comma-separated angles file.
     If the angles file is not present, or not found in same directory as tiff files, angles are assumed to be between 0 and 360 and equally spaced
@@ -30,8 +30,10 @@ def read_mantid_imaging_data(file_path, pixel_size, angles_file=None, convert_to
     ----------
     - file_path (str): The path where the TIFF files and angles file are located.
     - pixel_size (float): The pixel size in cm
+    - angles_file (str): The path to the angles file. If None, it will be inferred from the file_path.
     - convert_to_absorption (bool): Whether to use CIL's transmission to absorption converter to convert the data
     from transmission space to absorption space
+    - vertical (int): If set to an integer, the data will be cropped to the specified vertical size. If None, no cropping is applied.
 
     Returns
     -------
@@ -55,9 +57,7 @@ def read_mantid_imaging_data(file_path, pixel_size, angles_file=None, convert_to
     if angles_file is None:
         angles_file = glob.glob(os.path.join(file_path, '*.csv'))[0]
 
-    # Read projection data using TIFFStackReader
-    proj_reader = TIFFStackReader(file_name=file_path)
-    data = proj_reader.read()
+    
 
     if not os.path.exists(angles_file):
         angles = np.linspace(0,360, data.shape[0])
@@ -83,18 +83,45 @@ def read_mantid_imaging_data(file_path, pixel_size, angles_file=None, convert_to
 
     rotation_centre = final_cor_tilt['rotation_centre']
     tilt_angle_deg = final_cor_tilt['tilt_angle_deg']
-    
-    offset = -rotation_centre + data.shape[2] / 2
-    offset = offset + np.tan(tilt_angle_deg * np.pi / 180) * (data.shape[1] / 2)
 
-    acquisition_geometry = AcquisitionGeometry.create_Parallel3D().set_panel(num_pixels=[ data.shape[2], data.shape[1]], pixel_size = [pixel_size, pixel_size]).set_angles(angles=angles)
-    ac_data = AcquisitionData(data, geometry=acquisition_geometry)
+    tilt_angle_rad = np.radians(tilt_angle_deg)
 
-    ac_data.geometry.set_centre_of_rotation(-offset*pixel_size, angle=-tilt_angle_deg, angle_units='degree')
+    # Read projection data using TIFFStackReader
+    proj_reader = TIFFStackReader(file_name=file_path, roi={'axis_0':(0,1,1)})
+    single_proj = proj_reader.read()
+
+    offset = -rotation_centre + single_proj.shape[1] / 2
+    offset =  - (offset + np.tan(tilt_angle_rad) * (single_proj.shape[0] / 2))*pixel_size
+
+    if vertical is None:
+        proj_reader = TIFFStackReader(file_name=file_path)
+        data = proj_reader.read()
+
+        acquisition_geometry = AcquisitionGeometry.create_Parallel3D().set_panel(num_pixels=[ data.shape[2], data.shape[1]], pixel_size = [pixel_size, pixel_size]).set_angles(angles=angles)
+        ac_data = AcquisitionData(data, geometry=acquisition_geometry)
+
+        ac_data.geometry.set_centre_of_rotation(offset, angle=-tilt_angle_deg, angle_units='degree')
+
+    else:
+        proj_reader = TIFFStackReader(file_name=file_path, roi={'axis_1':(vertical, vertical+1, 1)})
+        data = proj_reader.read()
+
+        acquisition_geometry = AcquisitionGeometry.create_Parallel2D().set_panel(num_pixels=data.shape[1], pixel_size = pixel_size).set_angles(angles=angles)
+        
+        
+        ac_data = AcquisitionData(data, geometry=acquisition_geometry)
+
+        # Calculate centre of rotation offset at chosen slice:
+        index  = vertical - single_proj.shape[0]/2
+
+        new_offset = offset + index*pixel_size*np.tan(tilt_angle_rad)
+
+        # Set the acquisition data to have no tilt:
+        ac_data.geometry.set_centre_of_rotation(new_offset, angle=0)
 
     if convert_to_absorption:
         from cil.processors import TransmissionAbsorptionConverter
-        ac_data = TransmissionAbsorptionConverter()(ac_data)
+        ac_data = TransmissionAbsorptionConverter(min_intensity=1e-8)(ac_data)
     return ac_data
 
 def read_angles_from_mi_log_file(file_path, roi=None):

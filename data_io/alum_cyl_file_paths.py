@@ -18,7 +18,7 @@ import os
 
 # Please update these paths to local paths where you have stored the data: -----------------------------
 
-processed_data_path = ''
+processed_data_path = '/data/analysis/IMAT/RBNumber/RB2490112/ExampleData/Training/AluminiumCylinder/preprocessed_data'
 
 raw_data_base_path = ''
 
