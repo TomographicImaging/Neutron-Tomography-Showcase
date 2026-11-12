@@ -55,19 +55,11 @@ def read_mantid_imaging_data(file_path, pixel_size, angles_file=None, convert_to
 
 
     if angles_file is None:
-        angles_file = glob.glob(os.path.join(file_path, '*.csv'))[0]
-
-    
-
-    if not os.path.exists(angles_file):
-        angles = np.linspace(0,360, data.shape[0])
-    else:
-        # Read angles from the CSV file
-        angles = read_angles_from_mi_log_file(angles_file)
-        if angles == []:
-            with open(angles_file, "r") as csvfile:
-                for line in csvfile:
-                    angles.append(float(line.strip()))
+        angles_file = glob.glob(os.path.join(file_path, '*.csv'))
+        try:
+            angles_file = angles_file[0]
+        except:
+            angles_file = None
 
     import json
 
@@ -94,18 +86,29 @@ def read_mantid_imaging_data(file_path, pixel_size, angles_file=None, convert_to
     offset =  - (offset + np.tan(tilt_angle_rad) * (single_proj.shape[0] / 2))*pixel_size
 
     if vertical is None:
-        proj_reader = TIFFStackReader(file_name=file_path)
-        data = proj_reader.read()
+        roi= None
+    else:
+        roi = {'axis_1':(vertical, vertical+1, 1)}
+    proj_reader = TIFFStackReader(file_name=file_path, roi=roi)
+    data = proj_reader.read()
 
+    if angles_file is None or not os.path.exists(angles_file):
+        angles = np.linspace(0,360, data.shape[0], endpoint=False)
+    else:
+        # Read angles from the CSV file
+        angles = read_angles_from_mi_log_file(angles_file)
+        if angles == []:
+            with open(angles_file, "r") as csvfile:
+                for line in csvfile:
+                    angles.append(float(line.strip()))
+
+    if vertical is None:
         acquisition_geometry = AcquisitionGeometry.create_Parallel3D().set_panel(num_pixels=[ data.shape[2], data.shape[1]], pixel_size = [pixel_size, pixel_size]).set_angles(angles=angles)
         ac_data = AcquisitionData(data, geometry=acquisition_geometry)
 
         ac_data.geometry.set_centre_of_rotation(offset, angle=-tilt_angle_deg, angle_units='degree')
 
     else:
-        proj_reader = TIFFStackReader(file_name=file_path, roi={'axis_1':(vertical, vertical+1, 1)})
-        data = proj_reader.read()
-
         acquisition_geometry = AcquisitionGeometry.create_Parallel2D().set_panel(num_pixels=data.shape[1], pixel_size = pixel_size).set_angles(angles=angles)
         
         
