@@ -88,12 +88,12 @@ def read_mantid_imaging_data(file_path, pixel_size, angles_file=None, convert_to
     if vertical is None:
         roi= None
     else:
-        roi = roi={'axis_1':(vertical, vertical+1, 1)}
+        roi = {'axis_1':(vertical, vertical+1, 1)}
     proj_reader = TIFFStackReader(file_name=file_path, roi=roi)
     data = proj_reader.read()
 
     if angles_file is None or not os.path.exists(angles_file):
-        angles = np.linspace(0,360, data.shape[0])
+        angles = np.linspace(0,360, data.shape[0], endpoint=False)
     else:
         # Read angles from the CSV file
         angles = read_angles_from_mi_log_file(angles_file)
